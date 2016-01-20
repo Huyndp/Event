@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="EventModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Category">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="Events" Relationship="Self.EventCategory" FromRole="Category" ToRole="Event" />
+    <NavigationProperty Name="Users" Relationship="Self.UserCategory" FromRole="Category" ToRole="User" />
+  </EntityType>
+  <EntityType Name="Event">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Info" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Time" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="Place" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="MaxAttendance" Type="Int32" />
+    <Property Name="RequireAttendance" Type="Int32" />
+    <Property Name="Vote" Type="Int32" />
+    <Property Name="Price" Type="Decimal" Precision="19" Scale="4" />
+    <NavigationProperty Name="EventUsers" Relationship="Self.FK_EventUser_Event" FromRole="Event" ToRole="EventUser" />
+    <NavigationProperty Name="Categories" Relationship="Self.EventCategory" FromRole="Event" ToRole="Category" />
+  </EntityType>
+  <EntityType Name="EventUser">
+    <Key>
+      <PropertyRef Name="EventID" />
+      <PropertyRef Name="UserID" />
+    </Key>
+    <Property Name="EventID" Type="Int32" Nullable="false" />
+    <Property Name="UserID" Type="Int32" Nullable="false" />
+    <Property Name="RoleID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Event" Relationship="Self.FK_EventUser_Event" FromRole="EventUser" ToRole="Event" />
+    <NavigationProperty Name="EventUserRole" Relationship="Self.FK_EventUser_EventUserRole" FromRole="EventUser" ToRole="EventUserRole" />
+    <NavigationProperty Name="User" Relationship="Self.FK_EventUser_User" FromRole="EventUser" ToRole="User" />
+  </EntityType>
+  <EntityType Name="EventUserRole">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Role" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="EventUsers" Relationship="Self.FK_EventUser_EventUserRole" FromRole="EventUserRole" ToRole="EventUser" />
+  </EntityType>
+  <EntityType Name="Notification">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Information" Type="String" MaxLength="150" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="UserID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="User" Relationship="Self.FK_Notification_User" FromRole="Notification" ToRole="User" />
+  </EntityType>
+  <EntityType Name="sysdiagram">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="User">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Address" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Phone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="EventUsers" Relationship="Self.FK_EventUser_User" FromRole="User" ToRole="EventUser" />
+    <NavigationProperty Name="Notifications" Relationship="Self.FK_Notification_User" FromRole="User" ToRole="Notification" />
+    <NavigationProperty Name="Categories" Relationship="Self.UserCategory" FromRole="User" ToRole="Category" />
+  </EntityType>
+  <Association Name="FK_EventUser_Event">
+    <End Role="Event" Type="Self.Event" Multiplicity="1" />
+    <End Role="EventUser" Type="Self.EventUser" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Event">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="EventUser">
+        <PropertyRef Name="EventID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_EventUser_EventUserRole">
+    <End Role="EventUserRole" Type="Self.EventUserRole" Multiplicity="1" />
+    <End Role="EventUser" Type="Self.EventUser" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EventUserRole">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="EventUser">
+        <PropertyRef Name="RoleID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_EventUser_User">
+    <End Role="User" Type="Self.User" Multiplicity="1" />
+    <End Role="EventUser" Type="Self.EventUser" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="EventUser">
+        <PropertyRef Name="UserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Notification_User">
+    <End Role="User" Type="Self.User" Multiplicity="1" />
+    <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Notification">
+        <PropertyRef Name="UserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="EventCategory">
+    <End Role="Category" Type="Self.Category" Multiplicity="*" />
+    <End Role="Event" Type="Self.Event" Multiplicity="*" />
+  </Association>
+  <Association Name="UserCategory">
+    <End Role="Category" Type="Self.Category" Multiplicity="*" />
+    <End Role="User" Type="Self.User" Multiplicity="*" />
+  </Association>
+  <EntityContainer Name="EventEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Categories" EntityType="Self.Category" />
+    <EntitySet Name="Events" EntityType="Self.Event" />
+    <EntitySet Name="EventUsers" EntityType="Self.EventUser" />
+    <EntitySet Name="EventUserRoles" EntityType="Self.EventUserRole" />
+    <EntitySet Name="Notifications" EntityType="Self.Notification" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+    <EntitySet Name="Users" EntityType="Self.User" />
+    <AssociationSet Name="FK_EventUser_Event" Association="Self.FK_EventUser_Event">
+      <End Role="Event" EntitySet="Events" />
+      <End Role="EventUser" EntitySet="EventUsers" />
+    </AssociationSet>
+    <AssociationSet Name="FK_EventUser_EventUserRole" Association="Self.FK_EventUser_EventUserRole">
+      <End Role="EventUserRole" EntitySet="EventUserRoles" />
+      <End Role="EventUser" EntitySet="EventUsers" />
+    </AssociationSet>
+    <AssociationSet Name="FK_EventUser_User" Association="Self.FK_EventUser_User">
+      <End Role="User" EntitySet="Users" />
+      <End Role="EventUser" EntitySet="EventUsers" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Notification_User" Association="Self.FK_Notification_User">
+      <End Role="User" EntitySet="Users" />
+      <End Role="Notification" EntitySet="Notifications" />
+    </AssociationSet>
+    <AssociationSet Name="EventCategory" Association="Self.EventCategory">
+      <End Role="Category" EntitySet="Categories" />
+      <End Role="Event" EntitySet="Events" />
+    </AssociationSet>
+    <AssociationSet Name="UserCategory" Association="Self.UserCategory">
+      <End Role="Category" EntitySet="Categories" />
+      <End Role="User" EntitySet="Users" />
+    </AssociationSet>
+    <FunctionImport Name="sp_alterdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_creatediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_dropdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(EventModel.sp_helpdiagramdefinition_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(EventModel.sp_helpdiagrams_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_renamediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="new_diagramname" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="sp_upgraddiagrams" />
+  </EntityContainer>
+  <ComplexType Name="sp_helpdiagramdefinition_Result">
+    <Property Type="Int32" Name="version" Nullable="true" />
+    <Property Type="Binary" Name="definition" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="sp_helpdiagrams_Result">
+    <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+    <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+    <Property Type="Int32" Name="ID" Nullable="false" />
+    <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+    <Property Type="Int32" Name="OwnerID" Nullable="false" />
+  </ComplexType>
+</Schema>
